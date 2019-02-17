@@ -53,34 +53,30 @@ liveForum.init = function() {
 	});
 	this.textarea.previousElementSibling.style.display = 'none';
 
-	const mainDivSet = this.generateElements('div', [{class: 'wrapper'}, {class: 'buttons'}]);
-	const [wrapper, btnContainer] = mainDivSet;
+	const wrapper = this.generateElement('div', {class: 'wrapper'});
+	this.textarea.parentElement.insertBefore(wrapper, this.textarea);
+	const btnContainer = this.generateElement('div', {class: 'buttons'}, wrapper);
+	wrapper.appendChild(this.textarea);
 
-	const buttonSet = this.generateElements('button', [
-		{class: 'bold', 'data-bbcode': 'b', textContent: 'B'},
-		{class: 'italic', 'data-bbcode': 'i', textContent: 'I'},
-		{class: 'underline', 'data-bbcode': 'u', textContent: 'U'},
-		{class: 'strikethrough', 'data-bbcode': 's', textContent: 'S'}
-	]);
-	const [bold, italic, underline, strikethrough] = buttonSet;
-
-	const btnWrappers = this.generateElements('div', [{}, {}, {}]);
-	const [urlWrapper, imgWrapper, mediaWrapper] = btnWrappers;
-
-	buttonSet.forEach(button => {
-		button.addEventListener('click', function(e) {
+	const bold = this.generateElement('button', {class: 'bold', 'data-bbcode': 'b', textContent: 'B'}, btnContainer);
+		bold.addEventListener('click', function(e) {
 			liveForum.bbcodeHandler(e, this.dataset.bbcode);
 		});
-		btnContainer.appendChild(button);
-	});
+	const italic = this.generateElement('button', {class: 'bold', 'data-bbcode': 'i', textContent: 'I'}, btnContainer);
+		italic.addEventListener('click', function(e) {
+			liveForum.bbcodeHandler(e, this.dataset.bbcode);
+		});
+	const underline = this.generateElement('button', {class: 'bold', 'data-bbcode': 'u', textContent: 'U'}, btnContainer);
+		underline.addEventListener('click', function(e) {
+			liveForum.bbcodeHandler(e, this.dataset.bbcode);
+		});
+	const strikethrough = this.generateElement('button', {class: 'bold', 'data-bbcode': 's', textContent: 'S'}, btnContainer);
+		strikethrough.addEventListener('click', function(e) {
+			liveForum.bbcodeHandler(e, this.dataset.bbcode);
+		});
 
-	btnWrappers.forEach(btnWrapper => {
-		btnContainer.appendChild(btnWrapper);
-	});
-
-	this.textarea.parentElement.insertBefore(wrapper, this.textarea);
-	wrapper.appendChild(btnContainer);
-	wrapper.appendChild(this.textarea);
+	const urlWrapper = this.generateElement('div', {}, btnContainer);
+	
 }
 
 liveForum.textarea = document.querySelector('textarea');
@@ -108,18 +104,16 @@ liveForum.bbcodeHandler = function(e, bbcode) {
 liveForum.ctrlPressed = false;
 liveForum.altPressed = false;
 
-liveForum.generateElements = function(elName, options) {
-	const resultSet = [];
-	for(let i = 0; i < options.length; i++) {
-		let el = document.createElement(elName);
-		for(let key in options[i]) {
-			if(key == 'textContent') 
-				el.textContent = options[i][key];
-			el.setAttribute(key, options[i][key])
-		}
-		resultSet.push(el);
+liveForum.generateElement = function(elName, options, parent) {
+	let el = document.createElement(elName);
+	for(let key in options) {
+		if(key == 'textContent') 
+			el.textContent = options[key];
+		el.setAttribute(key, options[key])
 	}
-	return resultSet;
+	if(parent)
+		parent.appendChild(el);
+	return el;
 }
 
 liveForum.init();
