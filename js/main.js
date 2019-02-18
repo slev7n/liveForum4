@@ -182,18 +182,31 @@ liveForum.bbcodeHandler = function(e, bbcode, linkInput, textInput) {
 	const {selectionStart: selStart, selectionEnd: selEnd} = this.textarea;
 	let tagStart = '[' + bbcode + ']',
 		text = linkInput ? linkInput.value : this.textarea.getRangeText(),
-		tagEnd = '[/' + bbcode + ']',
-		force = false;
+		tagEnd = '[/' + bbcode + ']';
 
 	if(linkInput && textInput) {
-		tagStart = '[' + bbcode + '=' + linkInput.value + ']';
-		text = textInput.value;
-		force = true;
+		tagStart = '[' + bbcode + '=';
+		text = linkInput.value + ']' + textInput.value;
+
+		if(linkInput.value.length && !textInput.value.length) {
+			this.textarea.setRangeText(tagStart + text + tagEnd, selStart, selEnd, 'end');
+			this.textarea.setSelectionRange(selStart + tagStart.length + text.length, selStart + tagStart.length + text.length);
+			this.textarea.focus();
+			return;
+		} else if(!linkInput.value.length && textInput.value.length) {
+			this.textarea.setRangeText(tagStart + text + tagEnd, selStart, selEnd, 'end');
+			this.textarea.setSelectionRange(selStart + tagStart.length, selStart + tagStart.length);
+			this.textarea.focus();
+			return;
+		} else if (!linkInput.value.length && !textInput.value.length) {
+			tagStart = '[' + bbcode + ']';
+			text = '';
+		}
 	}
 
-
 	this.textarea.setRangeText(tagStart + text + tagEnd, selStart, selEnd, 'end');
-	if(!text.length || force)
+
+	if(!text.length)
 		this.textarea.setSelectionRange(selStart + tagStart.length, selStart + tagStart.length);
 
 	this.textarea.focus();
