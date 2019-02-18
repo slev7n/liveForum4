@@ -80,7 +80,7 @@ liveForum.init = function() {
 				break;
 			case 72:
 				if(this.ctrlPressed && this.altPressed) {
-					this.popupHandler(e, this.urlPopup, this.urlTextInput, this.urlLinkInput);
+					this.popupHandler(e, this.urlPopup, this.urlLinkInput, this.urlTextInput);
 				}
 				break;
 			case 73:
@@ -128,23 +128,23 @@ liveForum.init = function() {
 	this.urlWrapper = this.generateElement('div', {class: 'popup-wrapper'}, btnContainer);
 	this.urlPopupBtn = this.generateElement('button', {textContent: 'URL'}, this.urlWrapper);
 	this.urlPopupBtn.addEventListener('click', e => {
-		this.popupHandler(e, this.urlPopup, this.urlTextInput, this.urlLinkInput);
+		this.popupHandler(e, this.urlPopup, this.urlLinkInput, this.urlTextInput);
 	});
 	this.urlPopup = this.generateElement('div', {class: 'popup'}, this.urlWrapper);
 	this.popups.push(this.urlPopup);
 	this.urlTextInput = this.generateElement('input', {}, this.urlPopup);
 	this.urlTextInput.addEventListener('keypress', e => {
 		if(e.keyCode == 13)
-			this.bbcodeHandler(e, 'url', this.urlTextInput, this.urlLinkInput);
+			this.bbcodeHandler(e, 'url', this.urlLinkInput, this.urlTextInput);
 	});
 	this.urlLinkInput = this.generateElement('input', {}, this.urlPopup);
 	this.urlLinkInput.addEventListener('keypress', e => {
 		if(e.keyCode == 13)
-			this.bbcodeHandler(e, 'url', this.urlTextInput, this.urlLinkInput);
+			this.bbcodeHandler(e, 'url', this.urlLinkInput, this.urlTextInput);
 	});
 	this.urlBtn = this.generateElement('button', {textContent: 'Submit'}, this.urlPopup);
 	this.urlBtn.addEventListener('click', e => {
-			this.bbcodeHandler(e, 'url', this.urlTextInput, this.urlLinkInput);
+			this.bbcodeHandler(e, 'url', this.urlLinkInput, this.urlTextInput);
 		})
 	// IMG
 	this.imgWrapper = this.generateElement('div', {class: 'popup-wrapper'}, btnContainer);
@@ -155,6 +155,10 @@ liveForum.init = function() {
 	this.imgPopup = this.generateElement('div', {class: 'popup'}, this.imgWrapper);
 	this.popups.push(this.imgPopup);
 	this.imgLinkInput = this.generateElement('input', {}, this.imgPopup);
+	this.imgLinkInput.addEventListener('keypress', e => {
+		if(e.keyCode == 13)
+			this.bbcodeHandler(e, 'img', this.imgLinkInput);
+	});
 	this.imgBtn = this.generateElement('button', {textContent: 'Submit'}, this.imgPopup);
 	this.imgBtn.addEventListener('click', e => {
 		this.bbcodeHandler(e, 'img', this.imgLinkInput);
@@ -173,54 +177,61 @@ liveForum.closePopups = function(except) {
 
 liveForum.textarea = document.querySelector('textarea');
 
-liveForum.bbcodeHandler = function(e, bbcode, inputOne, inputTwo) {
+liveForum.bbcodeHandler = function(e, bbcode, linkInput, textInput) {
 	e.preventDefault();
-	const {selectionStart: start, selectionEnd: end} = this.textarea;
-	let	text = this.textarea.getRangeText(),
-	 	before = null,
+	const {selectionStart: selStart, selectionEnd: selEnd} = this.textarea;
+	let before = null,
+		text = this.textarea.getRangeText(),
 		after = null;
 
-	if(inputOne && inputTwo) {
-		text = inputOne.value;
-		if(inputTwo.value.length) {
-			before = '[' + bbcode + '=' + inputTwo.value + ']';
+	if(linkInput && textInput) {
+		before = '[' + bbcode + '=' + linkInput.value + ']';
+		after = '[/' + bbcode + ']';
+		if(linkInput.value.length && textInput.value.length) {
+			this.textarea.setRangeText(before + textInput.value + after, selStart, selEnd, 'end');
+		} else if(!linkInput.value.length && textInput.value.length) {
+			this.textarea.setRangeText(before + textInput.value + after, selStart, selEnd, 'end');
+			this.textarea.setSelectionRange(selStart + before.length-1, selStart + before.length-1);
+		} else if(linkInput.value.length && !textInput.value.length) {
+			this.textarea.setRangeText(before + textInput.value + after, selStart, selEnd, 'end');
+			this.textarea.setSelectionRange(selStart + before.length, selStart + before.length);
 		} else {
-			before = '[' + bbcode + '=]';
-			after = '[/' + bbcode + ']';
-			this.textarea.setRangeText(before + text + after, start, end, 'start');
-			this.textarea.setSelectionRange(start + before.length - 1, start + before.length - 1);
-			this.textarea.focus();
-			return;
+			before = '[' + bbcode + ']';
+			this.textarea.setRangeText(before + textInput.value + after, selStart, selEnd, 'end');
+			this.textarea.setSelectionRange(selStart + before.length, selStart + before.length);
 		}
-		after = '[/' + bbcode + ']';
-	} else if(inputOne) {
+		this.textarea.focus();		
+	} else if(linkInput) {
 		before = '[' + bbcode + ']';
-		text = inputOne.value;
 		after = '[/' + bbcode + ']';
+		this.textarea.setRangeText(before + linkInput.value + after, selStart, selEnd, 'end');
+		if(!linkInput.value.length)
+			this.textarea.setSelectionRange(selStart + before.length, selEnd + before.length);
+		this.textarea.focus();
 	} else {
 		before = '[' + bbcode + ']';
 		after = '[/' + bbcode + ']';
+		this.textarea.setRangeText(before + text + after, selStart, selEnd, 'end');
+		if(!text.length)
+			this.textarea.setSelectionRange(selStart + before.length, selEnd + before.length);
+		this.textarea.focus();
 	}
-
-	this.textarea.setRangeText(before + text + after, start, end, 'end');
-	if(!text.length)
-		this.textarea.setSelectionRange(start + before.length, end + before.length);
-	this.textarea.focus();
+	this.closePopups();
 }
 
-liveForum.popupHandler = function(e, popup, inputOne, inputTwo) {
+liveForum.popupHandler = function(e, popup, linkInput, textInput) {
 	e.preventDefault();
 	let text = this.textarea.getRangeText();
 	this.closePopups(popup); //except
 	popup.classList.toggle('show');
-	if(inputOne && inputTwo) {
-		inputOne.value = text;
+	if(linkInput && textInput) {
+		textInput.value = text;
 		if(text.length)
-			inputTwo.focus();
+			linkInput.focus();
 		else
-			inputOne.focus();
-	} else if(inputOne) {
-		inputOne.focus();
+			textInput.focus();
+	} else if(linkInput) {
+		linkInput.focus();
 	}
 }
 
