@@ -43,7 +43,71 @@ liveForum.hasParent = function(child, parent) {
 }
 
 liveForum.init = function() {
-	const self = this;
+	this.textarea.previousElementSibling.style.display = 'none';
+
+	const wrapper = this.generateElement('div', {});
+	this.textarea.parentElement.insertBefore(wrapper, this.textarea);
+	const btnContainer = this.generateElement('div', {}, wrapper);
+	wrapper.appendChild(this.textarea);
+
+	const bold = this.generateElement('button', {textContent: 'B'}, btnContainer);
+		bold.addEventListener('click', e => {
+			this.bbcodeHandler(e, 'b');
+		});
+	const italic = this.generateElement('button', {textContent: 'I'}, btnContainer);
+		italic.addEventListener('click', e => {
+			this.bbcodeHandler(e, 'i');
+		});
+	const underline = this.generateElement('button', {textContent: 'U'}, btnContainer);
+		underline.addEventListener('click', e => {
+			this.bbcodeHandler(e, 'u');
+		});
+	const strikethrough = this.generateElement('button', {textContent: 'S'}, btnContainer);
+		strikethrough.addEventListener('click', e => {
+			this.bbcodeHandler(e, 's');
+		});
+
+	// URL
+	this.urlWrapper = this.generateElement('div', {class: 'popup-wrapper'}, btnContainer);
+	this.urlPopupBtn = this.generateElement('button', {textContent: 'URL'}, this.urlWrapper);
+	this.urlPopupBtn.addEventListener('click', e => {
+		this.popupHandler(e, this.urlPopup, this.urlLinkInput, this.urlTextInput);
+	});
+	this.urlPopup = this.generateElement('div', {class: 'popup'}, this.urlWrapper);
+	this.popups.push(this.urlPopup);
+	this.urlTextInput = this.generateElement('input', {}, this.urlPopup);
+	this.urlTextInput.addEventListener('keypress', e => {
+		if(e.keyCode == 13)
+			this.bbcodeHandler(e, 'url', this.urlLinkInput, this.urlTextInput);
+	});
+	this.urlLinkInput = this.generateElement('input', {}, this.urlPopup);
+	this.urlLinkInput.addEventListener('keypress', e => {
+		if(e.keyCode == 13)
+			this.bbcodeHandler(e, 'url', this.urlLinkInput, this.urlTextInput);
+	});
+	this.urlBtn = this.generateElement('button', {textContent: 'Submit'}, this.urlPopup);
+	this.urlBtn.addEventListener('click', e => {
+			this.bbcodeHandler(e, 'url', this.urlLinkInput, this.urlTextInput);
+		})
+	// IMG
+	this.imgWrapper = this.generateElement('div', {class: 'popup-wrapper'}, btnContainer);
+	this.imgPopupBtn = this.generateElement('button', {textContent: 'IMG'}, this.imgWrapper);
+	this.imgPopupBtn.addEventListener('click', e => {
+			this.popupHandler(e, this.imgPopup, this.imgLinkInput);
+		});
+	this.imgPopup = this.generateElement('div', {class: 'popup'}, this.imgWrapper);
+	this.popups.push(this.imgPopup);
+	this.imgLinkInput = this.generateElement('input', {}, this.imgPopup);
+	this.imgLinkInput.addEventListener('keypress', e => {
+		if(e.keyCode == 13)
+			this.bbcodeHandler(e, 'img', this.imgLinkInput);
+	});
+	this.imgBtn = this.generateElement('button', {textContent: 'Submit'}, this.imgPopup);
+	this.imgBtn.addEventListener('click', e => {
+		this.bbcodeHandler(e, 'img', this.imgLinkInput);
+	});
+	
+	// E Listeners
 	document.addEventListener('click', e => {
 		if(!this.hasParent(e.target, '.popup-wrapper'))
 			this.closePopups();
@@ -100,70 +164,6 @@ liveForum.init = function() {
 				break;
 		}
 	});
-	this.textarea.previousElementSibling.style.display = 'none';
-
-	const wrapper = this.generateElement('div', {});
-	this.textarea.parentElement.insertBefore(wrapper, this.textarea);
-	const btnContainer = this.generateElement('div', {}, wrapper);
-	wrapper.appendChild(this.textarea);
-
-	const bold = this.generateElement('button', {textContent: 'B'}, btnContainer);
-		bold.addEventListener('click', function(e) {
-			self.bbcodeHandler(e, 'b');
-		});
-	const italic = this.generateElement('button', {textContent: 'I'}, btnContainer);
-		italic.addEventListener('click', function(e) {
-			self.bbcodeHandler(e, 'i');
-		});
-	const underline = this.generateElement('button', {textContent: 'U'}, btnContainer);
-		underline.addEventListener('click', function(e) {
-			self.bbcodeHandler(e, 'u');
-		});
-	const strikethrough = this.generateElement('button', {textContent: 'S'}, btnContainer);
-		strikethrough.addEventListener('click', function(e) {
-			self.bbcodeHandler(e, 's');
-		});
-
-	// URL
-	this.urlWrapper = this.generateElement('div', {class: 'popup-wrapper'}, btnContainer);
-	this.urlPopupBtn = this.generateElement('button', {textContent: 'URL'}, this.urlWrapper);
-	this.urlPopupBtn.addEventListener('click', e => {
-		this.popupHandler(e, this.urlPopup, this.urlLinkInput, this.urlTextInput);
-	});
-	this.urlPopup = this.generateElement('div', {class: 'popup'}, this.urlWrapper);
-	this.popups.push(this.urlPopup);
-	this.urlTextInput = this.generateElement('input', {}, this.urlPopup);
-	this.urlTextInput.addEventListener('keypress', e => {
-		if(e.keyCode == 13)
-			this.bbcodeHandler(e, 'url', this.urlLinkInput, this.urlTextInput);
-	});
-	this.urlLinkInput = this.generateElement('input', {}, this.urlPopup);
-	this.urlLinkInput.addEventListener('keypress', e => {
-		if(e.keyCode == 13)
-			this.bbcodeHandler(e, 'url', this.urlLinkInput, this.urlTextInput);
-	});
-	this.urlBtn = this.generateElement('button', {textContent: 'Submit'}, this.urlPopup);
-	this.urlBtn.addEventListener('click', e => {
-			this.bbcodeHandler(e, 'url', this.urlLinkInput, this.urlTextInput);
-		})
-	// IMG
-	this.imgWrapper = this.generateElement('div', {class: 'popup-wrapper'}, btnContainer);
-	this.imgPopupBtn = this.generateElement('button', {textContent: 'IMG'}, this.imgWrapper);
-	this.imgPopupBtn.addEventListener('click', e => {
-			this.popupHandler(e, this.imgPopup, this.imgLinkInput);
-		});
-	this.imgPopup = this.generateElement('div', {class: 'popup'}, this.imgWrapper);
-	this.popups.push(this.imgPopup);
-	this.imgLinkInput = this.generateElement('input', {}, this.imgPopup);
-	this.imgLinkInput.addEventListener('keypress', e => {
-		if(e.keyCode == 13)
-			this.bbcodeHandler(e, 'img', this.imgLinkInput);
-	});
-	this.imgBtn = this.generateElement('button', {textContent: 'Submit'}, this.imgPopup);
-	this.imgBtn.addEventListener('click', e => {
-		this.bbcodeHandler(e, 'img', this.imgLinkInput);
-	});
-	
 }
 
 liveForum.popups = [];

@@ -1,0 +1,66 @@
+#advert-once {
+    position: fixed;
+    display: inline-block;;
+/*    width: 320px; */
+    width: 600px;
+/*    height: 100px; */
+    height: 100px;
+    bottom: 5px;
+    right: auto;
+    left: calc((100% - 600px) / 2);
+    background-color: #333;
+    z-index: 99999;
+    align-items: center;
+    }
+
+#advert-once-iframe {
+
+    overflow:hidden;
+    border:none;
+    width:600px;
+    height:100px;
+
+}
+    
+#aadvert-once {
+left: 50%;
+position: fixed;
+text-align:center;
+bottom: 0px;
+width:100%;
+z-index:999;
+}
+
+#advert-once .advert-button {
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    left: -3px;
+    text-align: center;
+    top: -3px;
+    color: #fff;
+    font-family: 'Oswald', sans-serif;
+    background-color: #ff4500;
+    border-radius: 8px;
+    cursor: pointer;
+    line-height: 15px;
+    font-size: 12px;
+    }
+
+
+ #reset-session, #refresh-page {
+ display: block;
+ width: 250px;
+ text-align: center;
+ font-family: 'Oswald', sans-serif;
+ border-radius: 5px;
+ border: none;
+ padding: 2px 5px;
+ cursor: pointer;
+ background-color: #ddd;
+ margin: 5px 0;
+ }
+ 
+ #reset-session:hover, #refresh-page:hover {
+ background-color: #f96e5b;
+ }
