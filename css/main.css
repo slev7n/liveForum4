@@ -1,7 +1,56 @@
-.popup {
+.lf-button-wrapper {
+	position:relative;
+}
+
+.lf-popup {
 	display: none;
+	position:absolute;
+	top:100%;
+	left:0;
 }
 
 .show {
+	display: block;
+}
+
+.lf-container {
+	display:flex;
+}
+
+.lf-ls-input-wrapper {
 	display: flex;
 }
+
+.lf-footer {
+	display:flex;
+	justify-content: flex-end;
+}
+
+.lf-list-type-wrapper input[type='radio'] {
+	display: none;
+}
+
+.lf-list-type-wrapper input[type='radio']:checked + label {
+	color:red;
+}
+
+/*button {
+	color:transparent;
+	border:none;
+}
+
+button.bold {
+	background: url('../svg/bold.svg') no-repeat center;
+}
+
+button.italic {
+	background: url('../svg/italic.svg') no-repeat center;
+}
+
+button.underline {
+	background: url('../svg/underline.svg') no-repeat center;
+}
+
+button.strikethrough {
+	background: url('../svg/strikethrough.svg') no-repeat center;
+}*/

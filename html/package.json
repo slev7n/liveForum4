@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "browser-sync start --proxy localhost --files '**/*.html, **/*.css, **/*.js' --port 8888 --directory"
+    "start": "browser-sync start --proxy localhost/LiveForum4/ --files '**/*.html, **/*.css, **/*.js' --port 8888 --directory"
   },
   "author": "",
   "license": "ISC"
